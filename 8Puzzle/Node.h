@@ -5,11 +5,12 @@ using namespace std;
 class Node
 {
 public:
+	int f;
 	vector<vector<int>> state;
 	vector<Node*> childs;
 	Node* parent;
-	Node(vector<vector<int>> state) : state(state), parent(nullptr){}
-	Node() {};
+	Node(vector<vector<int>> state) : state(state), parent(nullptr), f(0){}
+	Node(): parent(nullptr) {};
 	void expand() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -17,7 +18,9 @@ public:
 						for (int l = j; l < 3; l++) {
 							if ((i!=k || j!= l) && canSwap(i, j, k, l)) {
 								Node* child = new Node(swapEl(i, j, k, l));
-								childs.push_back(child);
+								child->parent = this;
+								if (this->parent == nullptr || child->state[i][j] != this->parent->state[i][j])
+									childs.push_back(child);
 							}
 						}
 					}
@@ -36,5 +39,6 @@ public:
 		copy[row_2][col_2] = buffer;
 		return copy;
 	}
+
 };
 

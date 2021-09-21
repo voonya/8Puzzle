@@ -37,6 +37,7 @@ public:
 		else {
 			exit(0);
 		}
+		inF.close();
 	}
 	_CONFIG_ setConfig(string filename) {
 		string path = filesystem::current_path().string() + "/" + filename;

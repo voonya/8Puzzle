@@ -3,6 +3,7 @@
 #include "Reader.h"
 #include <iostream>
 #include <stack>
+#include <ctime>
 class Solver
 {
 	vector<vector<int>> goal = {
@@ -10,8 +11,14 @@ class Solver
 		{3,4,5},
 		{6,7,8}
 	};
+	/*vector<vector<int>> goal = {
+		{1,2,3},
+		{4,5,6},
+		{7,8,0}
+	};*/
 	vector<vector<int>> problem;
 	stack<vector<vector<int>>> solution;
+	int count_nodes = 0;
 	_CONFIG_ cfg;
 public:
 	Solver() {};
@@ -29,13 +36,17 @@ public:
 	}
 	Node* solveDLS() {
 		Node* start = new Node(problem);
+		int s1 = clock();
 		Node* result = recursiveDLS(start, cfg.limit, 0);
+		int s2 = clock();
+		int d = s2 - s1;
+		cout << d / 60000 << "m | " << d / 1000 << "s | " << d << "ms" << endl;
 		return result;
 
 	}
 	Node* recursiveDLS(Node* current, int limit, int depth) {
-		//cout << solution.size() << endl;
 		if (isWin(current->state)) {
+			cout << "win\n";
 			if(cfg.showSolution)
 				showSolution(current);
 			return current;
@@ -45,20 +56,41 @@ public:
 		}	
 		else {
 			current->expand();
+			if (current->childs.size() == 0)
+				return nullptr;
 			Node* result = nullptr;
-			//cout << endl << current->childs.size() << endl;
-			//cout << endl; showMatr(current->state);
 			for (Node* child : current->childs) {
-				//showMatr(child->state); cout <<  endl;
+				count_nodes++;
 				child->parent = current;
 				result = recursiveDLS(child, limit, depth + 1);
 				if (result != nullptr) {
-					
 					return result;
 				}
+				count_nodes--;
+				delete child;
 			}
 			return result;
 		}
+	}
+	Node* solveRBFS() {
+		Node* start = new Node(problem);
+		return RBFS(start, 10e8);
+	}
+	Node* RBFS(Node* current, int f_limit) {
+		if (isWin(current->state)) {
+			if (cfg.showSolution)
+				showSolution(current);
+			return current;
+		}
+		else {
+			current->expand();
+			if (current->childs.size() == 0)
+				return nullptr;
+			for (Node* child : current->childs) {
+
+			}
+		}
+
 	}
 	bool isWin(vector<vector<int>> state) {
 		for (int i = 0; i < 3; i++) {
@@ -68,6 +100,26 @@ public:
 			}
 		}
 		return true;
+	}
+	int getInversionsCount(vector<vector<int>> state) {
+		vector<int> copy;
+		int count = 0;
+		for (int i = 0; i < state.size(); i++) {
+			for (int j = 0; j < state[i].size(); j++) {
+				copy.push_back(state[i][j]);
+			}
+		}
+		for (int i = 0; i < copy.size(); i++) {
+			for (int j = i + 1; j < copy.size(); j++) {
+				if (copy[i] && copy[j] && copy[i] > copy[j])
+					count++;
+			}
+		}
+		return count;
+	}
+	bool isSolvable(vector<vector<int>> state) {
+		int inversionCount = getInversionsCount(state);
+		return (inversionCount % 2 == 0);
 	}
 	void showMatr(vector<vector<int>> state) {
 		cout << "\n";
@@ -102,6 +154,9 @@ public:
 	}
 	vector<vector<int>> getProblem() {
 		return problem;
+	}
+	void setProblem(vector<vector<int>> p) {
+		problem = p;
 	}
 	void setCfg(_CONFIG_ c) {
 		cfg = c;
