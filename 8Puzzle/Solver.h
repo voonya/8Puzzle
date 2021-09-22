@@ -75,48 +75,35 @@ public:
 				delete current->childs[i];
 				current->childs[i] = nullptr;
 			}
-			/*for (Node* child : current->childs) {
-				count_nodes++;
-				child->parent = current;
-				result = recursiveDLS(child, limit, depth + 1);
-				if (result != nullptr) {
-					return result;
-				}
-				Node* todel = child;
-				child = nullptr;
-				delete todel;
-				count_nodes--;
-			}*/
-			//if (result == nullptr)
-			//	delete current;
 			return result;
 		}
 	}
-	Node* solveRBFS() {
+	void solveRBFS() {
 		Node* start = new Node(problem);
 		start->fLimit = 10e8;
-		return RBFS(start, 10e8);
+		RBFS(start, 10e8);
 	}
-	Node* RBFS(Node* current, int f_limit) {
+	int RBFS(Node* current, int f_limit) {
 		if (isWin(current->state)) {
 			if (cfg.showSolution)
 				showSolution(current);
-			return current;
 		}
 		else {
 			current->expand();
-			if (current->childs.size() == 0)
-				return nullptr;
+			if (current->childs.size() == 0) {
+				return 10e8;
+			}
+				
 			for (int i = 0; i < current->childs.size(); i++) {
 				current->childs[i]->dist = current->dist + h1(current->childs[i]->state);
-				current->childs[i]->fLimit = max(current->childs[i]->dist, current->fLimit);
+				//current->childs[i]->fLimit = max(current->childs[i]->dist, current->fLimit);
 			}
 			sort(current->childs.begin(), current->childs.end(), [](Node* a, Node* b) {
 				return a->fLimit < b->fLimit;
 				});
-			while (true)
+			/*while (true)
 			{
-				Node* best = current->childs[0];
+				
 				if (best->fLimit > current->fLimit) {
 					current->fLimit = best->fLimit;
 					return nullptr;
@@ -127,7 +114,27 @@ public:
 				Node* result = RBFS(best, min(f_limit, alt));
 				if (result != nullptr)
 					return result;
+			}*/
+			Node* best = current->childs[0];
+			while (best->fLimit <= f_limit && best->fLimit < 10e8) {
+
+				int newFLimit;
+				if (current->childs.size() > 1) {
+					int alternative = current->childs[1]->fLimit;
+					newFLimit = min(f_limit, alternative);
+				}
+				else {
+					newFLimit = f_limit;
+				}
+				int newFCost = RBFS(best, newFLimit);
+				best->fLimit = newFCost;
+
+				sort(current->childs.begin(), current->childs.end(), [](Node* a, Node* b) {
+					return a->fLimit < b->fLimit;
+					});
+				best = current->childs[0];
 			}
+			return best->fLimit;
 		}
 
 	}

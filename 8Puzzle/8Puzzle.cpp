@@ -46,8 +46,8 @@ int main()
 	/*test({ {8,2,1},{3,6,7},{4,5,0} });
 	system("pause");
 	test({ {8,2,1},{3,6,7},{4,5,0} });*/
-	//solver.setProblem({ {3,0,2},{4,1,5},{6,7,8} });
-	solver.setProblem({ {8,2,1},{3,6,7},{4,5,0} });
+	solver.setProblem({ {3,0,2},{4,1,5},{6,7,8} });
+	//solver.setProblem({ {8,2,1},{3,6,7},{4,5,0} });
 	solver.solveRBFS();
 	
 	//solver.setProblem({ { 1,0,8 }, { 5,6,3 }, { 4,2,7 } });

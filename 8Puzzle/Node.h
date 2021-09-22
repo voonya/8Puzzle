@@ -6,14 +6,13 @@ class Node
 {
 public:
 	int fLimit;
-	int fCost;
 	int dist;
 	vector<vector<int>> state;
 	vector<Node*> childs;
 	Node* parent;
 	Node(vector<vector<int>> state) : state(state), parent(nullptr), fLimit(0), dist(0) {}
 	Node(): parent(nullptr),fLimit(0), dist(0) {};
-	Node(vector<vector<int>> state, Node* parent): parent(parent),fLimit(0), dist(0) {};
+	Node(vector<vector<int>> state, Node* parent): state(state), parent(parent),fLimit(0), dist(0) {};
 	void expand() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
