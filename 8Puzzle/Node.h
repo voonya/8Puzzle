@@ -5,20 +5,22 @@ using namespace std;
 class Node
 {
 public:
-	int f;
+	int fLimit;
+	int fCost;
+	int dist;
 	vector<vector<int>> state;
 	vector<Node*> childs;
 	Node* parent;
-	Node(vector<vector<int>> state) : state(state), parent(nullptr), f(0){}
-	Node(): parent(nullptr) {};
+	Node(vector<vector<int>> state) : state(state), parent(nullptr), fLimit(0), dist(0) {}
+	Node(): parent(nullptr),fLimit(0), dist(0) {};
+	Node(vector<vector<int>> state, Node* parent): parent(parent),fLimit(0), dist(0) {};
 	void expand() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 					for (int k = i; k < 3; k++) {
 						for (int l = j; l < 3; l++) {
 							if ((i!=k || j!= l) && canSwap(i, j, k, l)) {
-								Node* child = new Node(swapEl(i, j, k, l));
-								child->parent = this;
+								Node* child = new Node(swapEl(i, j, k, l), this);
 								if (this->parent == nullptr || child->state[i][j] != this->parent->state[i][j])
 									childs.push_back(child);
 							}

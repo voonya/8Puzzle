@@ -5,6 +5,9 @@
 #include <stack>
 #include <ctime>
 #include <memory>
+#include <stdlib.h>
+#include <algorithm>
+
 class Solver
 {
 	/*vector<vector<int>> goal = {
@@ -91,6 +94,7 @@ public:
 	}
 	Node* solveRBFS() {
 		Node* start = new Node(problem);
+		start->fLimit = 10e8;
 		return RBFS(start, 10e8);
 	}
 	Node* RBFS(Node* current, int f_limit) {
@@ -103,8 +107,26 @@ public:
 			current->expand();
 			if (current->childs.size() == 0)
 				return nullptr;
-			for (Node* child : current->childs) {
-
+			for (int i = 0; i < current->childs.size(); i++) {
+				current->childs[i]->dist = current->dist + h1(current->childs[i]->state);
+				current->childs[i]->fLimit = max(current->childs[i]->dist, current->fLimit);
+			}
+			sort(current->childs.begin(), current->childs.end(), [](Node* a, Node* b) {
+				return a->fLimit < b->fLimit;
+				});
+			while (true)
+			{
+				Node* best = current->childs[0];
+				if (best->fLimit > current->fLimit) {
+					current->fLimit = best->fLimit;
+					return nullptr;
+				}
+				int alt = 10e8;
+				if (current->childs.size() > 1)
+					alt = current->childs[1]->fLimit;
+				Node* result = RBFS(best, min(f_limit, alt));
+				if (result != nullptr)
+					return result;
 			}
 		}
 
@@ -177,6 +199,16 @@ public:
 	}
 	void setCfg(_CONFIG_ c) {
 		cfg = c;
+	}
+	int h1(vector<vector<int>> state) {
+		int counter = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (state[i][j] != goal[i][j])
+					counter++;
+			}
+		}
+		return counter;
 	}
 };
 
