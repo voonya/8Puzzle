@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stack>
 #include <ctime>
+#include <memory>
 class Solver
 {
 	/*vector<vector<int>> goal = {

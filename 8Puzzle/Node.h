@@ -46,9 +46,7 @@ public:
 		childs.clear();
 		parent = nullptr;
 		delete parent;
-		state.clear();
-		vector<vector<int>>().swap(state);
-		vector<Node*>().swap(childs);
+		state.swap(vector<vector<int>>());
 	}
 };
 
