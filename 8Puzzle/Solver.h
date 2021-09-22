@@ -6,16 +6,16 @@
 #include <ctime>
 class Solver
 {
-	vector<vector<int>> goal = {
+	/*vector<vector<int>> goal = {
 		{0,1,2},
 		{3,4,5},
 		{6,7,8}
-	};
-	/*vector<vector<int>> goal = {
+	};*/
+	vector<vector<int>> goal = {
 		{1,2,3},
 		{4,5,6},
 		{7,8,0}
-	};*/
+	};
 	vector<vector<int>> problem;
 	stack<vector<vector<int>>> solution;
 	int count_nodes = 0;
@@ -41,6 +41,7 @@ public:
 		int s2 = clock();
 		int d = s2 - s1;
 		cout << d / 60000 << "m | " << d / 1000 << "s | " << d << "ms" << endl;
+		delete start;
 		return result;
 
 	}
@@ -56,19 +57,34 @@ public:
 		}	
 		else {
 			current->expand();
-			if (current->childs.size() == 0)
+			if (current->childs.empty())
 				return nullptr;
 			Node* result = nullptr;
-			for (Node* child : current->childs) {
+			for (size_t i = 0; i < current->childs.size(); i++)
+			{
+				current->childs[i]->parent = current;
+				result = recursiveDLS(current->childs[i], limit, depth + 1);
+				if (result != nullptr) {
+					return result;
+				}
+				
+				delete current->childs[i];
+				current->childs[i] = nullptr;
+			}
+			/*for (Node* child : current->childs) {
 				count_nodes++;
 				child->parent = current;
 				result = recursiveDLS(child, limit, depth + 1);
 				if (result != nullptr) {
 					return result;
 				}
+				Node* todel = child;
+				child = nullptr;
+				delete todel;
 				count_nodes--;
-				delete child;
-			}
+			}*/
+			//if (result == nullptr)
+			//	delete current;
 			return result;
 		}
 	}

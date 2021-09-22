@@ -26,30 +26,39 @@ vector<vector<int>> ran() {
 	return result;
 }
 
-
+void test(vector<vector<int>> m) {
+	Solver solver;
+	solver.setCfg({ 50,"",1 });
+	out(m);
+	cout << endl << solver.isSolvable(m) << endl;
+	if (solver.isSolvable(m)) {
+		solver.setProblem(m);
+		solver.solveDLS();
+	}
+}
 int main()
 {
 	/*Menu menu;
 	menu.start();*/
 	srand(time(NULL));
-	Solver solver;
-	solver.setCfg({ 50,"",1 });
+	/*Solver solver;
+	solver.setCfg({ 50,"",1 });*/
+	test({ {8,2,1},{3,6,7},{4,5,0} });
+	system("pause");
+	test({ {8,2,1},{3,6,7},{4,5,0} });
+	/*solver.setProblem({ {3,0,2},{4,1,5},{6,7,8} });
+	* solver.solveDLS();*/
 	//solver.setProblem({ {8,2,1},{3,6,7},{4,5,0} });
 	//solver.setProblem({ { 1,0,8 }, { 5,6,3 }, { 4,2,7 } });
 	//cout << solver.isSolvable({ { 1,0,8 }, { 5,6,3 }, { 4,2,7 } });
 	//cout << solver.isSolvable({ { 1,0,8 }, { 5,6,3 }, { 4,2,7 } });
-	//solver.setProblem({ {3,0,2},{4,1,5},{6,7,8} });
-	//solver.solveDLS();
-	for (int i = 0; i < 10; i++) {
+	
+	
+	/*for (int i = 0; i < 10; i++) {
 		vector<vector<int>> m = ran();
-		out(m);
-		cout << endl << solver.isSolvable(m) << endl;
-		if (solver.isSolvable(m)) {
-			solver.setProblem(m);
-			solver.solveDLS();
-		}
-		
-	}
+		test(m);
+		system("pause");
+	}*/
 	return 0;
 }
 

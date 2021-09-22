@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-
+#include <iostream>
 using namespace std;
 class Node
 {
@@ -39,6 +39,16 @@ public:
 		copy[row_2][col_2] = buffer;
 		return copy;
 	}
-
+	~Node(){
+		for (vector<Node*>::iterator n = childs.begin(); n < childs.end(); n++) {
+			delete* n;
+		}
+		childs.clear();
+		parent = nullptr;
+		delete parent;
+		state.clear();
+		vector<vector<int>>().swap(state);
+		vector<Node*>().swap(childs);
+	}
 };
 
