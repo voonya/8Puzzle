@@ -5,6 +5,7 @@ using namespace std;
 class Node
 {
 public:
+	static int c;
 	int fLimit;
 	int dist;
 	vector<vector<int>> state;
@@ -20,8 +21,11 @@ public:
 						for (int l = j; l < 3; l++) {
 							if ((i!=k || j!= l) && canSwap(i, j, k, l)) {
 								Node* child = new Node(swapEl(i, j, k, l), this);
-								if (this->parent == nullptr || child->state[i][j] != this->parent->state[i][j])
+								if (this->parent == nullptr || child->state[i][j] != this->parent->state[i][j]) {
 									childs.push_back(child);
+									c++;
+								}
+									
 							}
 						}
 					}
@@ -41,6 +45,7 @@ public:
 		return copy;
 	}
 	~Node(){
+		c--;
 		for (vector<Node*>::iterator n = childs.begin(); n < childs.end(); n++) {
 			delete* n;
 		}
@@ -50,4 +55,6 @@ public:
 		state.swap(vector<vector<int>>());
 	}
 };
+
+
 

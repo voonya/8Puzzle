@@ -10,16 +10,17 @@
 
 class Solver
 {
-	/*vector<vector<int>> goal = {
+	int count = 0;
+	vector<vector<int>> goal = {
 		{0,1,2},
 		{3,4,5},
 		{6,7,8}
-	};*/
-	vector<vector<int>> goal = {
+	};
+	/*vector<vector<int>> goal = {
 		{1,2,3},
 		{4,5,6},
 		{7,8,0}
-	};
+	};*/
 	vector<vector<int>> problem;
 	stack<vector<vector<int>>> solution;
 	int count_nodes = 0;
@@ -60,6 +61,9 @@ public:
 			return nullptr;
 		}	
 		else {
+			count++;
+			if(count % 10000 == 0)
+				cout << Node::c << endl;
 			current->expand();
 			if (current->childs.empty())
 				return nullptr;
@@ -81,12 +85,14 @@ public:
 	void solveRBFS() {
 		Node* start = new Node(problem);
 		start->fLimit = 10e8;
-		RBFS(start, 10e8);
+		RBFS(start, 10e8, 0);
 	}
-	int RBFS(Node* current, int f_limit) {
+	int RBFS(Node* current, int f_limit, int depth) {
 		if (isWin(current->state)) {
-			if (cfg.showSolution)
+			if (cfg.showSolution) {
 				showSolution(current);
+			}
+			
 		}
 		else {
 			current->expand();
@@ -126,7 +132,7 @@ public:
 				else {
 					newFLimit = f_limit;
 				}
-				int newFCost = RBFS(best, newFLimit);
+				int newFCost = RBFS(best, newFLimit, depth + 1);
 				best->fLimit = newFCost;
 
 				sort(current->childs.begin(), current->childs.end(), [](Node* a, Node* b) {
