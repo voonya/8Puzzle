@@ -5,25 +5,23 @@ using namespace std;
 class Node
 {
 public:
-	static int c;
 	int fLimit;
 	int dist;
 	vector<vector<int>> state;
-	vector<Node*> childs;
-	Node* parent;
+	vector<shared_ptr<Node>> childs;
+	shared_ptr<Node> parent;
 	Node(vector<vector<int>> state) : state(state), parent(nullptr), fLimit(0), dist(0) {}
 	Node(): parent(nullptr),fLimit(0), dist(0) {};
-	Node(vector<vector<int>> state, Node* parent): state(state), parent(parent),fLimit(0), dist(0) {};
+	Node(vector<vector<int>> state, shared_ptr<Node> parent): state(state), parent(parent),fLimit(0), dist(0) {};
 	void expand() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 					for (int k = i; k < 3; k++) {
 						for (int l = j; l < 3; l++) {
 							if ((i!=k || j!= l) && canSwap(i, j, k, l)) {
-								Node* child = new Node(swapEl(i, j, k, l), this);
+								shared_ptr<Node> child(new Node(swapEl(i, j, k, l)));
 								if (this->parent == nullptr || child->state[i][j] != this->parent->state[i][j]) {
 									childs.push_back(child);
-									c++;
 								}
 									
 							}
@@ -44,16 +42,16 @@ public:
 		copy[row_2][col_2] = buffer;
 		return copy;
 	}
-	~Node(){
+	/*~Node(){
 		c--;
-		for (vector<Node*>::iterator n = childs.begin(); n < childs.end(); n++) {
-			delete* n;
+		for (vector<shared_ptr<Node>>::iterator n = childs.begin(); n < childs.end(); n++) {
+			delete n;
 		}
 		childs.clear();
 		parent = nullptr;
 		delete parent;
 		state.swap(vector<vector<int>>());
-	}
+	}*/
 };
 
 
