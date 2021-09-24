@@ -45,7 +45,7 @@ public:
 		shared_ptr<Node> result = recursiveDLS(start, cfg.limit, 0);
 		int s2 = clock();
 		int d = s2 - s1;
-		cout << d / 60000 << "m | " << d / 1000 << "s | " << d << "ms" << endl;
+		cout << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << "ms" << endl;
 		//delete start;
 		//return result;
 
@@ -61,10 +61,7 @@ public:
 			return nullptr;
 		}	
 		else {
-			/*count++;
-			if(count % 10000 == 0)
-				cout << Node::c << endl;*/
-			current->expand();
+			current->expand(current);
 			if (current->childs.empty())
 				return nullptr;
 			shared_ptr<Node> result = nullptr;
@@ -75,75 +72,84 @@ public:
 				if (result != nullptr) {
 					return result;
 				}
-				
-				//delete current->childs[i];
 				current->childs[i] = nullptr;
 			}
 			return result;
 		}
 	}
-	/*void solveRBFS() {
-		Node* start = new Node(problem);
-		start->fLimit = 10e8;
+
+	void solveRBFS() {
+		shared_ptr<Node> start(new Node(problem,nullptr));
+		int s1 = clock();
 		RBFS(start, 10e8, 0);
-	}*/
-	//int RBFS(Node* current, int f_limit, int depth) {
-	//	if (isWin(current->state)) {
-	//		if (cfg.showSolution) {
-	//			showSolution(current);
-	//		}
-	//		
-	//	}
-	//	else {
-	//		current->expand();
-	//		if (current->childs.size() == 0) {
-	//			return 10e8;
-	//		}
-	//			
-	//		for (int i = 0; i < current->childs.size(); i++) {
-	//			current->childs[i]->dist = current->dist + h1(current->childs[i]->state);
-	//			//current->childs[i]->fLimit = max(current->childs[i]->dist, current->fLimit);
-	//		}
-	//		sort(current->childs.begin(), current->childs.end(), [](Node* a, Node* b) {
-	//			return a->fLimit < b->fLimit;
-	//			});
-	//		/*while (true)
-	//		{
-	//			
-	//			if (best->fLimit > current->fLimit) {
-	//				current->fLimit = best->fLimit;
-	//				return nullptr;
-	//			}
-	//			int alt = 10e8;
-	//			if (current->childs.size() > 1)
-	//				alt = current->childs[1]->fLimit;
-	//			Node* result = RBFS(best, min(f_limit, alt));
-	//			if (result != nullptr)
-	//				return result;
-	//		}*/
-	//		Node* best = current->childs[0];
-	//		while (best->fLimit <= f_limit && best->fLimit < 10e8) {
+		int s2 = clock();
+		int d = s2 - s1;
+		cout << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << "ms" << endl;
+	}
+	int RBFS(shared_ptr<Node> current, int f_limit, int depth) {
+		if (isWin(current->state)) {
+			if (cfg.showSolution) {
+				showSolution(current);
+				return -1;
+			}
+		}
+		else {
+			if(current->childs.size() == 0)
+				current->expand(current);
+			if (current->childs.size() == 0) {
+				return 10e8;
+			}
+			while (true) {
+				sort(current->childs.begin(), current->childs.end(), [](shared_ptr<Node> a, shared_ptr<Node> b) {
+					return a->fCost < b->fCost;
+					});
+				shared_ptr<Node> best = current->childs[0];
+				//best->parent = current;
+				if (best->fCost > f_limit) {
+					//best->parent->childs[0] = nullptr;
+					int bestDist = best->fCost;
+					for (int i = 0; i < current->childs.size(); i++) {
+						current->childs[i] = nullptr;
+						best = nullptr;
+					}
+					current->childs.clear();
+					return bestDist;
+				}
+				int alt = 10e8;
+				if (current->childs.size() > 1)
+					alt = current->childs[1]->fCost;
+				best->fCost = RBFS(best, min(f_limit, alt), depth + 1);
+				if (best->fCost == -1)
+					return -1;
+			}
+			//sort(current->childs.begin(), current->childs.end(), [](shared_ptr<Node> a, shared_ptr<Node> b) {
+			//	return a->dist < b->dist;
+			//	});
+			//shared_ptr<Node> best = current->childs[0];
+			////best->parent = current;
+			//while (best->dist <= f_limit && best->dist < 10e8) {
 
-	//			int newFLimit;
-	//			if (current->childs.size() > 1) {
-	//				int alternative = current->childs[1]->fLimit;
-	//				newFLimit = min(f_limit, alternative);
-	//			}
-	//			else {
-	//				newFLimit = f_limit;
-	//			}
-	//			int newFCost = RBFS(best, newFLimit, depth + 1);
-	//			best->fLimit = newFCost;
+			//	int newFLimit;
+			//	if (current->childs.size() > 1) {
+			//		int alternative = current->childs[1]->dist;
+			//		newFLimit = alternative;
+			//	}
+			//	else {
+			//		newFLimit = f_limit;
+			//	}
+			//	int newFCost = RBFS(best, newFLimit, depth + 1);
+			//	best->dist = newFCost;
+			//	
+			//	sort(current->childs.begin(), current->childs.end(), [](shared_ptr<Node> a, shared_ptr<Node> b) {
+			//		return a->dist < b->dist;
+			//		});
+			//	best = current->childs[0];
+			//	//best->parent = current;
+			//}
+			//return best->dist;
+		}
 
-	//			sort(current->childs.begin(), current->childs.end(), [](Node* a, Node* b) {
-	//				return a->fLimit < b->fLimit;
-	//				});
-	//			best = current->childs[0];
-	//		}
-	//		return best->fLimit;
-	//	}
-
-	//}
+	}
 	bool isWin(vector<vector<int>> state) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -212,16 +218,6 @@ public:
 	}
 	void setCfg(_CONFIG_ c) {
 		cfg = c;
-	}
-	int h1(vector<vector<int>> state) {
-		int counter = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (state[i][j] != goal[i][j])
-					counter++;
-			}
-		}
-		return counter;
 	}
 };
 
