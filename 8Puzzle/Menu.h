@@ -18,7 +18,8 @@ public:
 			cout << " Incorrect answer. Let`s try again.\n";
 			exit(1);
 		}
-		solver.solveDLS();
+		showSolution(solver.solve());
+		system("pause");
 	}
 	Solver setGameMenuFile() {
 		system("cls");
@@ -29,7 +30,7 @@ public:
 		cout << " Your game:\n";
 		Reader reader;
 		Solver solver(reader.readInitialState(answer));
-		solver.showMatr(solver.getProblem());
+		showMatr(solver.getProblem());
 		setConfigMenu(solver);
 		return solver;
 	}
@@ -41,7 +42,7 @@ public:
 		Solver solver(answer);
 		system("cls");
 		cout << " Your game:\n";
-		solver.showMatr(solver.getProblem());
+		showMatr(solver.getProblem());
 		setConfigMenu(solver);
 		return solver;
 	}
@@ -77,5 +78,7 @@ public:
 		}
 		solver.setCfg(cfg);
 	}
+	void showMatr(vector<vector<int>> state);
+	void showSolution(stack<vector<vector<int>>> s);
 };
 

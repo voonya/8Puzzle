@@ -56,3 +56,20 @@ int Node::getFcost()
 {
 	return fCost;
 }
+
+int Node::getInversionsCount() {
+	vector<int> copy;
+	int count = 0;
+	for (int i = 0; i < state.size(); i++) {
+		for (int j = 0; j < state[i].size(); j++) {
+			copy.push_back(state[i][j]);
+		}
+	}
+	for (int i = 0; i < copy.size(); i++) {
+		for (int j = i + 1; j < copy.size(); j++) {
+			if (copy[i] && copy[j] && copy[i] > copy[j])
+				count++;
+		}
+	}
+	return count;
+}

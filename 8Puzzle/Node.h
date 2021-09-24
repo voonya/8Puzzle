@@ -50,17 +50,7 @@ public:
 	int euristicH1();
 
 	int getFcost();
-
-	/*~Node(){
-		c--;
-		for (vector<shared_ptr<Node>>::iterator n = childs.begin(); n < childs.end(); n++) {
-			delete n;
-		}
-		childs.clear();
-		parent = nullptr;
-		delete parent;
-		state.swap(vector<vector<int>>());
-	}*/
+	int getInversionsCount();
 };
 
 
