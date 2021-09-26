@@ -10,7 +10,6 @@
 
 class Solver
 {
-	int count = 0;
 	vector<vector<int>> goal = {
 		{0,1,2},
 		{3,4,5},
@@ -23,15 +22,12 @@ class Solver
 	};*/
 	vector<vector<int>> problem;
 	stack<vector<vector<int>>> solution;
-	int count_nodes = 0;
+	int countNodes = 0;
+	int countNodesAtAll = 0;
+	int startTime;
 	_CONFIG_ cfg;
-public:
-	Solver() {};
-	Solver(vector<vector<int>> p) : problem(p) {};
-	
-	Solver(string line);
-	stack<vector<vector<int>>> solve();
 
+private:
 	void solveDLS();
 
 	shared_ptr<Node> recursiveDLS(shared_ptr<Node> current, int limit, int depth);
@@ -41,7 +37,14 @@ public:
 	int RBFS(shared_ptr<Node> current, int f_limit, int depth);
 
 	bool isWin(vector<vector<int>> state);
+public:
+	Solver() {};
 
+	Solver(vector<vector<int>> p) : problem(p) {};
+	
+	Solver(string line);
+
+	stack<vector<vector<int>>> solve();
 
 	//bool isSolvable(vector<vector<int>> state);
 

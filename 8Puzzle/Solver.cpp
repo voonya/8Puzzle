@@ -11,27 +11,38 @@ Solver::Solver(string line) {
 		currRow++;
 	}
 }
+
+//загальна фунцкія вирішення гри
 stack<vector<vector<int>>> Solver::solve()
 {
+	startTime = clock();
 	if (cfg.typeSearch == "LDFS") {
 		solveDLS();
 	}
 	else if(cfg.typeSearch == "RBFS"){
 		solveRBFS();
 	}
-	
+	cout << "\n Iterations: " << count << endl;
 	return solution;
 }
+
 void Solver::solveDLS() {
 	shared_ptr<Node> start(new Node(problem,nullptr));
 	int s1 = clock();
-	recursiveDLS(start, cfg.limit, 0);
+	if (cfg.limit < 200)
+		recursiveDLS(start, cfg.limit, 0);
+	else
+		recursiveDLS(start, 200, 0);
 	int s2 = clock();
 	int d = s2 - s1;
-	cout << " " << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << "ms" << endl;
+	cout << " " << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << endl;
 	
 }
 shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int depth) {
+	if (((int(clock()) - startTime) / 1000 / 60) >= 30 || countNodes >= 420000) {
+		cout << "Error. Can't solve it";
+		exit(1);
+	}
 	if (isWin(current->state)) {
 		makeSolution(current);
 		return current;
@@ -41,6 +52,8 @@ shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int d
 	}
 	else {
 		current->expand(current);
+		countNodes += current->childs.size();
+		countNodesAtAll += current->childs.size();
 		if (current->childs.empty())
 			return nullptr;
 		shared_ptr<Node> result = nullptr;
@@ -52,6 +65,7 @@ shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int d
 				return result;
 			}
 			current->childs[i] = nullptr;
+			countNodes--;
 		}
 		return result;
 	}
@@ -64,9 +78,13 @@ void Solver::solveRBFS() {
 	int s2 = clock();
 	int d = s2 - s1;
 	cout << " " << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << "ms" << endl;
-	makeSolution(start);
 }
 int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
+	if (((int(clock()) - startTime) / 1000 / 60) >= 30 || countNodes >= 420000) {
+		cout << "Error. Can't solve it";
+		exit(1);
+	}
+		
 	if (isWin(current->state)) {
 		if (cfg.showSolution) {
 			makeSolution(current);
@@ -79,20 +97,19 @@ int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
 		if (current->childs.size() == 0) {
 			return 10e8;
 		}
+		countNodes += current->childs.size();
+		countNodesAtAll += current->childs.size();
 		while (true) {
 			sort(current->childs.begin(), current->childs.end(), [](shared_ptr<Node> a, shared_ptr<Node> b) {
 				return a->fCost < b->fCost;
 				});
 			shared_ptr<Node> best = current->childs[0];
-			//best->parent = current;
 			if (best->fCost > f_limit) {
-				//best->parent->childs[0] = nullptr;
 				int bestDist = best->fCost;
-				for (int i = 0; i < current->childs.size(); i++) {
-					current->childs[i] = nullptr;
-					best = nullptr;
-				}
+				// якщо необхідно зберігти пам'ять, але постраждає продуктивність
+				countNodes -= current->childs.size();
 				current->childs.clear();
+				
 				return bestDist;
 			}
 			int alt = 10e8;
@@ -128,9 +145,11 @@ void Solver::makeSolution(shared_ptr<Node> n) {
 		curr = curr->parent;
 	}
 }
+
 void Solver::setProblem(vector<vector<int>> p) {
 	problem = p;
 }
+
 void Solver::setCfg(_CONFIG_ c) {
 	cfg = c;
 }

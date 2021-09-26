@@ -23,6 +23,15 @@ public:
 		parent = p;
 		if (parent != nullptr) {
 			dist = parent->dist + 1;
+			/*dist = 0;
+			int num = 0;
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					int goalNum = num == 0 ? 9 : num;
+					dist += abs(goalNum - state[i][j]);
+					num++;
+				}
+			}*/
 			h = euristicH1();
 		}
 		else {
@@ -41,6 +50,7 @@ public:
 			h = euristicH1();
 		}
 	}
+
 	void expand(shared_ptr<Node> p);
 
 	bool canSwap(int row_1, int col_1, int row_2, int col_2);
@@ -50,6 +60,7 @@ public:
 	int euristicH1();
 
 	int getFcost();
+
 	int getInversionsCount();
 };
 

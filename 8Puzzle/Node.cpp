@@ -1,23 +1,14 @@
 #include "Node.h"
 
 void Node::expand(shared_ptr<Node> p) {
-	if (childs.size() != 0) {
-		
-		for (int i = 0; i < childs.size(); i++) {
-			childs[i] = nullptr;
-		}
-		childs.clear();
-		//cout << "Che\n";
-	}
-		
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			for (int k = i; k < 3; k++) {
 				for (int l = j; l < 3; l++) {
 					if ((i != k || j != l) && canSwap(i, j, k, l)) {
-						shared_ptr<Node> child((new Node(swapEl(i, j, k, l),p)));
-						if (this->parent == nullptr || child->state[i][j] != this->parent->state[i][j]) {
-							childs.push_back(child);
+						vector<vector<int>> child = swapEl(i, j, k, l);
+						if (this->parent == nullptr || child[i][j] != this->parent->state[i][j]) {
+							childs.push_back(shared_ptr<Node>(new Node(child,p)));	
 						}
 					}
 				}
