@@ -18,28 +18,7 @@ public:
 
 	
 
-	Node(vector<vector<int>> s, shared_ptr<Node> p) {
-		state = s;
-		parent = p;
-		if (parent != nullptr) {
-			dist = parent->dist + 1;
-			/*dist = 0;
-			int num = 0;
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					int goalNum = num == 0 ? 9 : num;
-					dist += abs(goalNum - state[i][j]);
-					num++;
-				}
-			}*/
-			h = euristicH1();
-		}
-		else {
-			dist = 0;
-			h = euristicH1();
-		}
-		fCost = dist + h;
-	};
+	
 	void calcFcost() {
 		if (parent != nullptr) {
 			dist = parent->dist + 1;
@@ -50,6 +29,8 @@ public:
 			h = euristicH1();
 		}
 	}
+
+	Node(vector<vector<int>> s, shared_ptr<Node> p);
 
 	void expand(shared_ptr<Node> p);
 
@@ -62,6 +43,7 @@ public:
 	int getFcost();
 
 	int getInversionsCount();
+	int manhattan();
 };
 
 

@@ -1,5 +1,20 @@
 #include "Node.h"
-
+Node::Node(vector<vector<int>> s, shared_ptr<Node> p) {
+	state = s;
+	parent = p;
+	if (parent != nullptr) {
+		dist = parent->dist + 1;
+		h = euristicH1();
+		//h = manhattan();
+		fCost = max(dist + h, parent->fCost);
+	}
+	else {
+		dist = 0;
+		h = euristicH1();
+		//h = manhattan();
+		fCost = dist + h;
+	}
+};
 void Node::expand(shared_ptr<Node> p) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -63,4 +78,33 @@ int Node::getInversionsCount() {
 		}
 	}
 	return count;
+}
+
+int Node::manhattan(){
+
+	vector<vector<int>> goal = {
+		{0,1,2},
+		{3,4,5},
+		{6,7,8}
+	};
+	int dist = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (state[i][j] != 0)
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					for (int l = 0; l < 3; l++)
+					{
+						if (state[i][j] == goal[k][l])
+							dist += abs(i - k) + abs(j - l);
+					}
+				}
+			}
+		}
+	}
+
+	return dist;
 }

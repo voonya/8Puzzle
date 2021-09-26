@@ -24,6 +24,8 @@ class Solver
 	stack<vector<vector<int>>> solution;
 	int countNodes = 0;
 	int countNodesAtAll = 0;
+	int deadEnds = 0;
+	int iterationsCount = 0;
 	int startTime;
 	_CONFIG_ cfg;
 

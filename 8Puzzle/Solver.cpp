@@ -16,27 +16,33 @@ Solver::Solver(string line) {
 stack<vector<vector<int>>> Solver::solve()
 {
 	startTime = clock();
+	countNodes++;
+	countNodesAtAll++;
 	if (cfg.typeSearch == "LDFS") {
 		solveDLS();
 	}
 	else if(cfg.typeSearch == "RBFS"){
 		solveRBFS();
 	}
-	cout << "\n Iterations: " << count << endl;
+	int endTime = clock();
+	int delta = endTime - startTime;
+	cout << " " << float(delta) / 60000 << "m | " << float(delta) / 1000 << "s | " << delta << endl;
+	cout << "Count iterations: " << iterationsCount << endl;
+	cout << "Count dead ends: " << deadEnds << endl;
+	cout << "Nodes at all: " << countNodesAtAll << endl;
+	cout << "Nodes in memory: " << countNodes << endl;
+	
+	
+	//cout << "\n Iterations: " << count << endl;
 	return solution;
 }
 
 void Solver::solveDLS() {
 	shared_ptr<Node> start(new Node(problem,nullptr));
-	int s1 = clock();
 	if (cfg.limit < 200)
 		recursiveDLS(start, cfg.limit, 0);
 	else
 		recursiveDLS(start, 200, 0);
-	int s2 = clock();
-	int d = s2 - s1;
-	cout << " " << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << endl;
-	
 }
 shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int depth) {
 	if (((int(clock()) - startTime) / 1000 / 60) >= 30 || countNodes >= 420000) {
@@ -48,10 +54,12 @@ shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int d
 		return current;
 	}
 	else if (depth == limit) {
+		deadEnds++;
 		return nullptr;
 	}
 	else {
 		current->expand(current);
+		iterationsCount++;
 		countNodes += current->childs.size();
 		countNodesAtAll += current->childs.size();
 		if (current->childs.empty())
@@ -73,11 +81,7 @@ shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int d
 
 void Solver::solveRBFS() {
 	shared_ptr<Node> start(new Node(problem, nullptr));
-	int s1 = clock();
 	RBFS(start, 10e8, 0);
-	int s2 = clock();
-	int d = s2 - s1;
-	cout << " " << float(d) / 60000 << "m | " << float(d) / 1000 << "s | " << d << "ms" << endl;
 }
 int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
 	if (((int(clock()) - startTime) / 1000 / 60) >= 30 || countNodes >= 420000) {
@@ -87,13 +91,14 @@ int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
 		
 	if (isWin(current->state)) {
 		if (cfg.showSolution) {
-			makeSolution(current);
-			return -1;
+			makeSolution(current);	
 		}
+		return -1;
 	}
 	else {
-		if (current->childs.size() == 0)
+		//if (current->childs.size() == 0)
 			current->expand(current);
+			iterationsCount++;
 		if (current->childs.size() == 0) {
 			return 10e8;
 		}
@@ -116,8 +121,10 @@ int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
 			if (current->childs.size() > 1)
 				alt = current->childs[1]->fCost;
 			best->fCost = RBFS(best, min(f_limit, alt), depth + 1);
-			if (best->fCost == -1)
+			if (best->fCost == -1) {
+				best = nullptr;
 				return -1;
+			}	
 		}
 	}
 
