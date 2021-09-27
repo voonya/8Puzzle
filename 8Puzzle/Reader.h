@@ -14,12 +14,15 @@ struct _CONFIG_ {
 	_CONFIG_(int l, string t, bool sS) : limit(l), typeSearch(t), showSolution(sS) {}
 };
 
+
 class Reader
 {
 public:
 	Reader() {};
+	// зчитування початкового стану
 	vector<vector<int>> readInitialState(string filename);
-	_CONFIG_ setConfig(string filename);
+	// зчитування налаштувань
+	_CONFIG_ getConfig(string filename);
 
 };
 

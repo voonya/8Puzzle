@@ -23,7 +23,7 @@ vector<vector<int>> Reader::readInitialState(string filename) {
 	}
 	inF.close();
 }
-_CONFIG_ Reader::setConfig(string filename) {
+_CONFIG_ Reader::getConfig(string filename) {
 	string path = filesystem::current_path().string() + "/" + filename;
 	ifstream inF(path);
 	_CONFIG_ cfg;

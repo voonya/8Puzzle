@@ -53,7 +53,7 @@ void Menu::setConfigMenu(Solver& solver) {
 		system("cls");
 		cout << " Enter the file name with extension (f.e. test.txt): ";
 		getline(cin, answer);
-		cfg = reader.setConfig(answer);
+		cfg = reader.getConfig(answer);
 	}
 	else if (answer == "2") {
 		system("cls");

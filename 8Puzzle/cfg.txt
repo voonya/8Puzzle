@@ -1,3 +1,0 @@
-limit=3
-type=LDFS
-show_solution=1

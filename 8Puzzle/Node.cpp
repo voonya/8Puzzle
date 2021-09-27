@@ -108,3 +108,4 @@ int Node::manhattan(){
 
 	return dist;
 }
+

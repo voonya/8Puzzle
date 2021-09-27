@@ -12,29 +12,31 @@ Solver::Solver(string line) {
 	}
 }
 
-//загальна фунцкія вирішення гри
 stack<vector<vector<int>>> Solver::solve()
 {
-	startTime = clock();
-	countNodes++;
-	countNodesAtAll++;
-	if (cfg.typeSearch == "LDFS") {
-		solveDLS();
+	if (checkState()) {
+		startTime = clock();
+		countNodes++;
+		countNodesAtAll++;
+		if (cfg.typeSearch == "LDFS") {
+			solveDLS();
+		}
+		else if (cfg.typeSearch == "RBFS") {
+			solveRBFS();
+		}
+		int endTime = clock();
+		int delta = endTime - startTime;
+		cout << " " << float(delta) / 60000 << "m | " << float(delta) / 1000 << "s | " << delta << endl;
+		cout << "Count iterations: " << iterationsCount << endl;
+		cout << "Count dead ends: " << deadEnds << endl;
+		cout << "Nodes at all: " << countNodesAtAll << endl;
+		cout << "Nodes in memory: " << countNodes << endl;
+		return solution;
 	}
-	else if(cfg.typeSearch == "RBFS"){
-		solveRBFS();
+	else {
+		cout << "Error, ucorrect type of state\n";
+		exit(1);
 	}
-	int endTime = clock();
-	int delta = endTime - startTime;
-	cout << " " << float(delta) / 60000 << "m | " << float(delta) / 1000 << "s | " << delta << endl;
-	cout << "Count iterations: " << iterationsCount << endl;
-	cout << "Count dead ends: " << deadEnds << endl;
-	cout << "Nodes at all: " << countNodesAtAll << endl;
-	cout << "Nodes in memory: " << countNodes << endl;
-	
-	
-	//cout << "\n Iterations: " << count << endl;
-	return solution;
 }
 
 void Solver::solveDLS() {
@@ -50,6 +52,9 @@ shared_ptr<Node> Solver::recursiveDLS(shared_ptr<Node> current, int limit, int d
 		exit(1);
 	}
 	if (isWin(current->state)) {
+		if (cfg.showSolution) {
+			makeSolution(current);
+		}
 		makeSolution(current);
 		return current;
 	}
@@ -84,7 +89,7 @@ void Solver::solveRBFS() {
 	RBFS(start, 10e8, 0);
 }
 int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
-	if (((int(clock()) - startTime) / 1000 / 60) >= 30 || countNodes >= 420000) {
+	if (((int(clock()) - startTime) / 1000 / 60) >= 1 || countNodes >= 420000) {
 		cout << "Error. Can't solve it";
 		exit(1);
 	}
@@ -96,9 +101,8 @@ int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
 		return -1;
 	}
 	else {
-		//if (current->childs.size() == 0)
-			current->expand(current);
-			iterationsCount++;
+		current->expand(current);
+		iterationsCount++;
 		if (current->childs.size() == 0) {
 			return 10e8;
 		}
@@ -111,10 +115,8 @@ int Solver::RBFS(shared_ptr<Node> current, int f_limit, int depth) {
 			shared_ptr<Node> best = current->childs[0];
 			if (best->fCost > f_limit) {
 				int bestDist = best->fCost;
-				// якщо необхідно зберігти пам'ять, але постраждає продуктивність
 				countNodes -= current->childs.size();
 				current->childs.clear();
-				
 				return bestDist;
 			}
 			int alt = 10e8;
@@ -139,10 +141,21 @@ bool Solver::isWin(vector<vector<int>> state) {
 	return true;
 }
 
-//bool Solver::isSolvable(vector<vector<int>> state) {
-//	int inversionCount = getInversionsCount(state);
-//	return (inversionCount % 2 == 0);
-//}
+bool Solver::checkState()
+{
+	bool nums[9] = { 0,0,0,0,0,0,0,0,0 };
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (problem[i][j] >= 9)
+				return false;
+			if (nums[problem[i][j]])
+				return false;
+			nums[problem[i][j]] = true;
+		}
+	}
+	return true;
+}
+
 
 
 void Solver::makeSolution(shared_ptr<Node> n) {
@@ -160,3 +173,9 @@ void Solver::setProblem(vector<vector<int>> p) {
 void Solver::setCfg(_CONFIG_ c) {
 	cfg = c;
 }
+
+
+//bool Solver::isSolvable(vector<vector<int>> state) {
+//	int inversionCount = getInversionsCount(state);
+//	return (inversionCount % 2 == 0);
+//}
